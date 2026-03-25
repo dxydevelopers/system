@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sitemendr OS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sitemendr">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Sitemendr OS</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="dashboard" aria-label="Dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </li>
+                <li class="nav-item" data-tab="work" aria-label="Work">
+                    <span class="nav-icon">💼</span>
+                    <span class="nav-label">Work</span>
+                </li>
+                <li class="nav-item" data-tab="trading" aria-label="Trading">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">Trading</span>
+                </li>
+                <li class="nav-item" data-tab="saas" aria-label="SaaS">
+                    <span class="nav-icon">🚀</span>
+                    <span class="nav-label">SaaS</span>
+                </li>
+                <li class="nav-item" data-tab="learning" aria-label="Learning">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">Learning</span>
+                </li>
+                <li class="nav-item" data-tab="timetables" aria-label="Timetables">
+                    <span class="nav-icon">🕐</span>
+                    <span class="nav-label">Timetable</span>
+                </li>
+                <li class="nav-item" data-tab="fitness" aria-label="Fitness">
+                    <span class="nav-icon">💪</span>
+                    <span class="nav-label">Fitness</span>
+                </li>
+                <li class="nav-item" data-tab="goals" aria-label="Goals">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">Goals</span>
+                </li>
+                <li class="nav-item" data-tab="tasks" aria-label="Daily Tasks">
+                    <span class="nav-icon">✅</span>
+                    <span class="nav-label">Daily Tasks</span>
+                </li>
+                <li class="nav-item" data-tab="finances" aria-label="Finance">
+                    <span class="nav-icon">💰</span>
+                    <span class="nav-label">Finance</span>
+                </li>
+                <li class="nav-item" data-tab="calendar" aria-label="Calendar">
+                    <span class="nav-icon">🗓️</span>
+                    <span class="nav-label">Calendar</span>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="streak-display">
+                    <span class="streak-icon">🔥</span>
+                    <span class="streak-count" id="globalStreak">0</span>
+                    <span class="streak-label">day streak</span>
+                </div>
+                <div class="backup-controls">
+                    <button class="backup-btn" id="exportBtn" aria-label="Export Data">📤 Export</button>
+                    <button class="backup-btn" id="importBtn" aria-label="Import Data">📥 Import</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section class="tab-content active" id="dashboard">
+                <header class="section-header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p class="current-day-label" id="currentDayLabel">Monday</p>
+                    </div>
+                    <p class="date-display" id="currentDate"></p>
+                    <p class="date-display" id="currentDateUSA"></p>
+                </header>
+                
+                <!-- Today's Summary -->
+                <div class="today-summary">
+                    <div class="summary-card">
+                        <span class="summary-icon">📅</span>
+                        <div class="summary-info">
+                            <span class="summary-label">Today</span>
+                            <span class="summary-value" id="todayDateDisplay">Mar 24, 2026</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-icon">✅</span>
+                        <div class="summary-info">
+                            <span class="summary-label">Tasks Done</span>
+                            <span class="summary-value" id="tasksDoneCount">0/0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-icon">💪</span>
+                        <div class="summary-info">
+                            <span class="summary-label">Workout</span>
+                            <span class="summary-value editable" data-type="todayWorkout" id="todayWorkoutLabel">Rest Day</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Today's Timetable Tasks -->
+                    <div class="dashboard-card full-width">
+                        <div class="card-header">
+                            <h2>📋 Today's Schedule</h2>
+                        </div>
+                        <div class="card-content" id="todayScheduleList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Today's Tasks -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2>✅ My Daily Tasks</h2>
+                            <button class="quick-add-btn" data-target="tasks">+</button>
+                        </div>
+                        <div class="card-content" id="dashboardTasks">
+                            <div class="empty-state">No tasks for today</div>
+                        </div>
+                    </div>
+
+                    <!-- Daily 4:15am Review -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2>☑️ Daily 4:15am Review</h2>
+                        </div>
+                        <div class="card-content editable-list" data-type="dailyReview">
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did money come in today?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Has it been split correctly?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Savings moved to Binance as USDT?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Trading rules followed?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you complete your daily tasks?</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Progress -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2>📊 Weekly Progress</h2>
+                        </div>
+                        <div class="card-content editable-list" data-type="weeklyProgress">
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">4 consecutive days for workouts</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Spanish Classes (Tue & Thu)</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Sitemendr progress</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">GroupMe work Progress</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Finance -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2>💵 Quick Finance</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="finance-summary">
+                                <div class="finance-item">
+                                    <span class="finance-label">Balance</span>
+                                    <span class="finance-value positive" id="miniBalance">Ksh 0.00</span>
+                                </div>
+                                <div class="finance-item">
+                                    <span class="finance-label">This Week</span>
+                                    <span class="finance-value" id="miniWeekBalance">Ksh 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timetables Tab -->
+            <section class="tab-content" id="timetables">
+                <header class="section-header">
+                    <h1>Timetable</h1>
+                    <div class="timetable-actions">
+                        <div class="day-selector">
+                            <button class="day-btn active" data-day="monday">Mon</button>
+                            <button class="day-btn" data-day="tuesday">Tue</button>
+                            <button class="day-btn" data-day="wednesday">Wed</button>
+                            <button class="day-btn" data-day="thursday">Thu</button>
+                            <button class="day-btn" data-day="friday">Fri</button>
+                            <button class="day-btn" data-day="saturday">Sat</button>
+                            <button class="day-btn" data-day="sunday">Sun</button>
+                        </div>
+                        <button class="add-btn" id="addTimeBlockBtn">+ Add Time Block</button>
+                    </div>
+                </header>
+                <div class="timetable-container">
+                    <div class="time-blocks" id="timeBlocks">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Work Tab -->
+            <section class="tab-content" id="work">
+                <header class="section-header">
+                    <h1>💼 Work</h1>
+                </header>
+                <!-- Sub-tabs for Work -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="work-trading">📈 Trading</button>
+                    <button class="sub-tab" data-subtab="work-saas">💻 SaaS</button>
+                    <button class="sub-tab" data-subtab="work-learning">📚 Learning</button>
+                </div>
+                
+                <div class="work-container">
+                    <!-- Trading Sub-tab -->
+                    <div class="sub-tab-content active" id="work-trading">
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">🚨 Trading Rules</h3>
+                            <ul class="rules-list editable-list" data-type="tradingRules" contenteditable="true">
+                                <li>Rule 1: Always use stop loss</li>
+                                <li>Rule 2: Never risk more than 2% per trade</li>
+                                <li>Rule 3: Follow the trend</li>
+                                <li>Rule 4: Keep a trading journal</li>
+                            </ul>
+                        </div>
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">Daily Checklist</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you create a trading plan today?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you log your trades?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you review your trades?</label>
+                            </div>
+                        </div>
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">Account Progress</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="tradingProgress" style="width: 0%"></div>
+                            </div>
+                            <span class="goal-text" id="tradingGoalText">$0 / $1,000</span>
+                        </div>
+                    </div>
+                    
+                    <!-- SaaS Sub-tab -->
+                    <div class="sub-tab-content" id="work-saas">
+                        <div class="saas-card">
+                            <h3 contenteditable="true" class="editable">Current Focus</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">2-3 weeks deadline - fully live</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">First clients - traders contacted</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">First revenue - even small counts</label>
+                            </div>
+                        </div>
+                        <div class="saas-card">
+                            <h3 contenteditable="true" class="editable">Development Checklist</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Core features built</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Testing completed</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Deployment ready</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Sub-tab -->
+                    <div class="sub-tab-content" id="work-learning">
+                        <div class="sub-tabs">
+                            <button class="sub-tab active" data-subtab="learning-spanish">🇪🇸 Spanish</button>
+                            <button class="sub-tab" data-subtab="learning-tools">🔧 Tools</button>
+                            <button class="sub-tab" data-subtab="learning-books">📖 Books</button>
+                            <button class="sub-tab" data-subtab="learning-videos">🎥 Videos</button>
+                        </div>
+                        <div class="learning-card">
+                            <h3 contenteditable="true" class="editable">Current Learning Goals</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Spanish practice (30 min/day)</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Tools course progress</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Read 10 pages daily</label>
+                            </div>
+                        </div>
+                        <div class="sub-tab-content active" id="learning-spanish">
+                            <div class="learning-card">
+                                <h3 contenteditable="true" class="editable">🇪🇸 Spanish</h3>
+                                <div class="checklist-item">
+                                    <input type="checkbox">
+                                    <label contenteditable="true" class="editable">Tuesday Class Completed</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox">
+                                    <label contenteditable="true" class="editable">Thursday Class Completed</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox">
+                                    <label contenteditable="true" class="editable">Daily vocabulary practice</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sub-tab-content" id="learning-tools">
+                            <div class="learning-card">
+                                <h3 contenteditable="true" class="editable">🔧 Tools & Courses</h3>
+                                <div contenteditable="true" class="editable">
+                                    <p>Add tools and courses progress here...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sub-tab-content" id="learning-books">
+                            <div class="learning-card">
+                                <h3 contenteditable="true" class="editable">📖 Books</h3>
+                                <div contenteditable="true" class="editable">
+                                    <p>Add books reading progress here...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sub-tab-content" id="learning-videos">
+                            <div class="learning-card">
+                                <h3 contenteditable="true" class="editable">🎥 Videos & Podcasts</h3>
+                                <div contenteditable="true" class="editable">
+                                    <p>Add videos and podcasts watched here...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fitness Tab -->
+            <section class="tab-content" id="fitness">
+                <header class="section-header">
+                    <h1>💪 Fitness</h1>
+                    <button class="add-btn" id="addFitnessDayBtn">+ Add Day</button>
+                </header>
+                <div class="fitness-container editable-list" data-type="fitness" id="fitnessContainer">
+                    <div class="fitness-day" data-day="1">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 1 – Upper Body (Push Focus)</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <ul>
+                                <li><strong>Push-ups</strong> – 3×10–20</li>
+                                <li><strong>Pike push-ups</strong> (shoulders) – 3×6–12</li>
+                                <li><strong>Chair dips</strong> – 3×8–15</li>
+                                <li><strong>Plank</strong> – 3×30–60 sec</li>
+                            </ul>
+                            <p class="fitness-target">👉 Chest, shoulders, triceps, core</p>
+                        </div>
+                    </div>
+
+                    <div class="fitness-day" data-day="2">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 2 – Lower Body (Leg Strength)</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <ul>
+                                <li><strong>Squats</strong> – 3×15–25</li>
+                                <li><strong>Lunges</strong> – 3×10 each leg</li>
+                                <li><strong>Glute bridges</strong> – 3×15</li>
+                                <li><strong>Calf raises</strong> – 3×20</li>
+                            </ul>
+                            <p class="fitness-target">👉 Power + balance</p>
+                        </div>
+                    </div>
+
+                    <div class="fitness-day" data-day="3">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 3 – Core + Conditioning</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <ul>
+                                <li><strong>Mountain climbers</strong> – 3×30 sec</li>
+                                <li><strong>Leg raises</strong> – 3×10–15</li>
+                                <li><strong>Russian twists</strong> – 3×20</li>
+                                <li><strong>Burpees</strong> – 3×8–12</li>
+                            </ul>
+                            <p class="fitness-target">👉 This builds your engine + abs</p>
+                        </div>
+                    </div>
+
+                    <div class="fitness-day rest-day" data-day="4">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 4 – Rest / Mobility</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <ul>
+                                <li><strong>Stretch</strong></li>
+                                <li><strong>Light movement</strong></li>
+                                <li><strong>No pressure</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fitness-day" data-day="5">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 5 – Full Body (Warrior Day)</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <ul>
+                                <li><strong>Push-ups</strong> – 3 sets</li>
+                                <li><strong>Squats</strong> – 3 sets</li>
+                                <li><strong>Burpees</strong> – 3 sets</li>
+                                <li><strong>Plank</strong> – 3 sets</li>
+                            </ul>
+                            <p class="fitness-target">👉 Slightly intense, whole body engaged</p>
+                        </div>
+                    </div>
+
+                    <div class="fitness-day rest-day" data-day="6">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 6 – Light Movement</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <ul>
+                                <li><strong>Slow squats</strong></li>
+                                <li><strong>Stretching</strong></li>
+                                <li><strong>Core (light)</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fitness-day rest-day" data-day="7">
+                        <div class="fitness-day-header">
+                            <h3 contenteditable="true" class="editable">DAY 7 – Rest</h3>
+                            <input type="checkbox" class="fitness-check">
+                        </div>
+                        <div class="fitness-details" contenteditable="true" class="editable">
+                            <p>Full rest day. Recover and prepare for next week!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Tab -->
+            <section class="tab-content" id="goals">
+                <header class="section-header">
+                    <h1>🎯 Goals</h1>
+                </header>
+                <div class="goals-container editable-list" data-type="goals" id="goalsContainer">
+                    <div class="goal-phase">
+                        <h3 contenteditable="true" class="editable">Month 1 — The Foundation</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li>Writing target = Ksh 60,000</li>
+                            <li>Binance savings = Ksh 20,000</li>
+                            <li>SaaS deadline = 2–3 weeks — fully live</li>
+                            <li>Trading = 4 rules locked daily</li>
+                            <li>SHA health cover = Ksh 9,000 full year</li>
+                            <li>Domain sitemendr.com = Ksh 1,500</li>
+                            <li>Spanish = started — Tue & Thu</li>
+                            <li>Sitemendr = public launch 🔥</li>
+                        </ul>
+                    </div>
+                    <div class="goal-phase">
+                        <h3 contenteditable="true" class="editable">Month 2 — The Unlock</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li>Trading account = $1,000 fully funded</li>
+                            <li>Writing target = Ksh 70,000</li>
+                            <li>SaaS first clients = traders contacted & closing</li>
+                            <li>Sitemendr first revenue = even small counts</li>
+                            <li>Binance savings = Ksh 40,000+ cumulative</li>
+                            <li>Spanish = basic conversations</li>
+                            <li>Social media = active & posting</li>
+                            <li>Network = trader relationships built</li>
+                        </ul>
+                    </div>
+                    <div class="goal-phase">
+                        <h3 contenteditable="true" class="editable">Months 3–4 — Momentum</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li>Trading = consistently profitable</li>
+                            <li>Writing = Ksh 80,000+</li>
+                            <li>SaaS revenue = growing, multiple clients</li>
+                            <li>Dropshipping = live, first onboarded</li>
+                            <li>Affiliate = program running</li>
+                            <li>Savings = Ksh 80,000+ cumulative in Binance</li>
+                            <li>Spanish = conversational</li>
+                            <li>Argentina = real planning begins 🇦🇷</li>
+                        </ul>
+                    </div>
+                    <div class="freedom-moment">
+                        <h3 contenteditable="true" class="editable">The Freedom Moment 🇦🇷</h3>
+                        <p contenteditable="true" class="editable">Writing becomes optional when all 3 are true:</p>
+                        <ul contenteditable="true" class="editable">
+                            <li>✅ Trading funded AND consistently profitable</li>
+                            <li>✅ SaaS generating consistent income</li>
+                            <li>✅ You sit down one weekend and realize you don't need GroupMe tonight</li>
+                        </ul>
+                        <p contenteditable="true" class="editable">Timeline: 4–6 months | Argentina: 1–2 years 🇦🇷</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tasks Tab -->
+            <section class="tab-content" id="tasks">
+                <header class="section-header">
+                    <h1>Daily Tasks</h1>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="today">Today</button>
+                        <button class="filter-btn" data-filter="week">This Week</button>
+                        <button class="filter-btn" data-filter="all">All Tasks</button>
+                        <button class="filter-btn" data-filter="history">History</button>
+                    </div>
+                </header>
+                <div class="tasks-container">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>My Tasks</h2>
+                            <button class="add-btn" id="addTaskBtn">+ Add Task</button>
+                        </div>
+                        <div class="panel-content" id="tasksList">
+                            <div class="empty-state">No tasks yet. Add your first task!</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Trading Tab -->
+            <section class="tab-content" id="trading">
+                <header class="section-header">
+                    <h1>📈 Trading</h1>
+                </header>
+                <!-- Sub-tabs for Trading -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="trading-journal">📊 Journal</button>
+                    <button class="sub-tab" data-subtab="trading-analysis">📈 Analysis</button>
+                    <button class="sub-tab" data-subtab="trading-review">📝 Review</button>
+                </div>
+                
+                <div class="trading-container">
+                    <!-- Journal Sub-tab -->
+                    <div class="sub-tab-content active" id="trading-journal">
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">🚨 Trading Rules</h3>
+                            <ul class="rules-list editable-list" data-type="tradingRules" contenteditable="true">
+                                <li>Rule 1: Always use stop loss</li>
+                                <li>Rule 2: Never risk more than 2% per trade</li>
+                                <li>Rule 3: Follow the trend</li>
+                                <li>Rule 4: Keep a trading journal</li>
+                            </ul>
+                        </div>
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">Daily Checklist</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you create a trading plan today?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you log your trades?</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Did you review your trades?</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Sub-tab -->
+                    <div class="sub-tab-content" id="trading-analysis">
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">Market Analysis</h3>
+                            <div contenteditable="true" class="editable analysis-content">
+                                <p>Add your market analysis notes here...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Sub-tab -->
+                    <div class="sub-tab-content" id="trading-review">
+                        <div class="trading-card">
+                            <h3 contenteditable="true" class="editable">Weekly Review</h3>
+                            <div contenteditable="true" class="editable review-content">
+                                <p>Write your weekly trading review here...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SaaS Tab -->
+            <section class="tab-content" id="saas">
+                <header class="section-header">
+                    <h1>💻 SaaS Development</h1>
+                </header>
+                <!-- Sub-tabs for SaaS -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="saas-features">💡 Features</button>
+                    <button class="sub-tab" data-subtab="saas-bugs">🐛 Bugs</button>
+                    <button class="sub-tab" data-subtab="saas-dev">🔧 Development</button>
+                </div>
+                
+                <div class="saas-container editable-list" data-type="saas" id="saasContainer">
+                    <!-- Features Sub-tab -->
+                    <div class="sub-tab-content active" id="saas-features">
+                        <div class="saas-card">
+                            <h3 contenteditable="true" class="editable">Current Focus</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">2-3 weeks deadline - fully live</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">First clients - traders contacted</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">First revenue - even small counts</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bugs Sub-tab -->
+                    <div class="sub-tab-content" id="saas-bugs">
+                        <div class="saas-card">
+                            <h3 contenteditable="true" class="editable">Known Bugs</h3>
+                            <div contenteditable="true" class="editable bugs-list">
+                                <p>List bugs here...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Development Sub-tab -->
+                    <div class="sub-tab-content" id="saas-dev">
+                        <div class="saas-card">
+                            <h3 contenteditable="true" class="editable">Development Checklist</h3>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Core features built</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Testing completed</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Deployment ready</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox">
+                                <label contenteditable="true" class="editable">Marketing materials ready</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Tab -->
+            <section class="tab-content" id="learning">
+                <header class="section-header">
+                    <h1>📚 Learning</h1>
+                </header>
+                <div class="learning-container editable-list" data-type="learning" id="learningContainer">
+                    <div class="learning-card">
+                        <h3 contenteditable="true" class="editable">Monday: Stoicism (The Foundation)</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li><strong>The Goal</strong>: Stop being a "slave" to your environment or other people's moods.</li>
+                            <li><strong>What to Learn</strong>: Research "Marcus Aurelius" or "Epictetus."</li>
+                            <li><strong>The Mindset</strong>: You are the mountain; the weather happens around you, not to you.</li>
+                        </ul>
+                    </div>
+                    <div class="learning-card">
+                        <h3 contenteditable="true" class="editable">Wednesday: Mental Models (The Strategy)</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li><strong>The Goal</strong>: Make better decisions than 99% of people.</li>
+                            <li><strong>What to Learn</strong>: Research "First Principles Thinking."</li>
+                            <li><strong>The Mindset</strong>: A billionaire doesn't guess; he uses logic to find the highest-leverage move.</li>
+                        </ul>
+                    </div>
+                    <div class="learning-card">
+                        <h3 contenteditable="true" class="editable">Friday: Archetypes & Shadow Work (The Soul)</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li><strong>The Goal</strong>: Understand your "dark side" so it doesn't control you.</li>
+                            <li><strong>What to Learn</strong>: Research "The King, Warrior, Magician, Lover" framework.</li>
+                            <li><strong>The Mindset</strong>: Total self-honesty.</li>
+                        </ul>
+                    </div>
+                    <div class="learning-card">
+                        <h3 contenteditable="true" class="editable">Spanish (Tue & Thu)</h3>
+                        <div class="checklist-item">
+                            <input type="checkbox">
+                            <label contenteditable="true" class="editable">Tuesday Class Completed</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox">
+                            <label contenteditable="true" class="editable">Thursday Class Completed</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Finances Tab -->
+            <section class="tab-content" id="finances">
+                <header class="section-header">
+                    <h1>💰 Finance</h1>
+                    <div class="finance-actions">
+                        <button class="action-btn" id="addIncomeBtn">+ Income</button>
+                        <button class="action-btn" id="addExpenseBtn">+ Expense</button>
+                    </div>
+                </header>
+                <div class="finances-container">
+                    <div class="finance-overview">
+                        <div class="balance-card">
+                            <span class="balance-label">Total Balance</span>
+                            <span class="balance-value" id="totalBalance">Ksh 0.00</span>
+                        </div>
+                        <div class="balance-card">
+                            <span class="balance-label">Binance Savings Goal</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="savingsProgress" style="width: 0%"></div>
+                            </div>
+                            <span class="goal-text" id="savingsGoalText">Ksh 0 / Ksh 20,000</span>
+                        </div>
+                    </div>
+                    
+                    <div class="finance-split editable-list" data-type="financeSplit">
+                        <h3 contenteditable="true" class="editable">💰 Money Split (Every shilling immediately)</h3>
+                        <div class="split-grid">
+                            <div class="split-item">
+                                <span class="split-percent editable" contenteditable="true">33%</span>
+                                <span class="split-bucket editable" contenteditable="true">Living expenses</span>
+                                <span class="split-amount editable" contenteditable="true">~Ksh 20,000</span>
+                            </div>
+                            <div class="split-item">
+                                <span class="split-percent editable" contenteditable="true">33%</span>
+                                <span class="split-bucket editable" contenteditable="true">Binance savings (USDT)</span>
+                                <span class="split-amount editable" contenteditable="true">~Ksh 20,000</span>
+                            </div>
+                            <div class="split-item">
+                                <span class="split-percent editable" contenteditable="true">20%</span>
+                                <span class="split-bucket editable" contenteditable="true">Trading account</span>
+                                <span class="split-amount editable" contenteditable="true">~Ksh 12,000</span>
+                            </div>
+                            <div class="split-item">
+                                <span class="split-percent editable" contenteditable="true">14%</span>
+                                <span class="split-bucket editable" contenteditable="true">Business reinvestment</span>
+                                <span class="split-amount editable" contenteditable="true">~Ksh 8,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="binance-rule editable-list" data-type="binanceRule">
+                        <h3 contenteditable="true" class="editable">🚨 Binance Rule</h3>
+                        <ul contenteditable="true" class="editable">
+                            <li>Money hits → split immediately</li>
+                            <li>Savings → Binance as USDT same day</li>
+                            <li>Never leave savings sitting in KES</li>
+                            <li>Never wait — same day every time</li>
+                        </ul>
+                    </div>
+
+                    <div class="transactions-list">
+                        <h3>Recent Transactions</h3>
+                        <div id="transactionsList">
+                            <div class="empty-state">No transactions yet</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Tab -->
+            <section class="tab-content" id="calendar">
+                <header class="section-header">
+                    <div>
+                        <h1>Calendar</h1>
+                        <p class="current-day-label">Your Daily History</p>
+                    </div>
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn" id="prevMonth">←</button>
+                        <span id="currentMonthYear">March 2026</span>
+                        <button class="calendar-nav-btn" id="nextMonth">→</button>
+                    </div>
+                </header>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+
+                <!-- Day Detail Panel Backdrop -->
+                <div class="day-detail-backdrop" id="dayDetailBackdrop"></div>
+
+                <!-- Day Detail Panel -->
+                <div class="day-detail-panel" id="dayDetailPanel">
+                    <div class="day-detail-header">
+                        <h2 id="selectedDayDate">Select a day</h2>
+                        <button class="day-detail-close" id="closeDayDetail">×</button>
+                    </div>
+                    <div class="day-detail-content" id="dayDetailContent">
+                        <!-- Schedule -->
+                        <div class="day-section">
+                            <h3>📅 Schedule</h3>
+                            <div class="day-schedule-list" id="dayScheduleList"></div>
+                        </div>
+                        
+                        <!-- Tasks -->
+                        <div class="day-section">
+                            <h3>✅ Tasks</h3>
+                            <div class="day-tasks-list" id="dayTasksList"></div>
+                        </div>
+                        
+                        <!-- Fitness -->
+                        <div class="day-section">
+                            <h3>💪 Fitness</h3>
+                            <div class="day-fitness" id="dayFitness"></div>
+                        </div>
+                        
+                        <!-- Learning -->
+                        <div class="day-section">
+                            <h3>📚 Learning</h3>
+                            <div class="day-learning" id="dayLearning"></div>
+                        </div>
+                        
+                        <!-- Finance -->
+                        <div class="day-section">
+                            <h3>💰 Finance</h3>
+                            <div class="day-finance" id="dayFinance"></div>
+                        </div>
+                        
+                        <!-- Notes -->
+                        <div class="day-section">
+                            <h3>📝 Notes</h3>
+                            <div class="day-notes" id="dayNotes" contenteditable="true"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Task</h2>
+                <button class="modal-close" data-modal="taskModal">&times;</button>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Task</label>
+                    <input type="text" id="taskTitle" required placeholder="Enter task">
+                </div>
+                <div class="form-group">
+                    <label for="taskCategory">Category</label>
+                    <select id="taskCategory">
+                        <option value="general">General</option>
+                        <option value="trading">Trading</option>
+                        <option value="saas">SaaS</option>
+                        <option value="learning">Learning</option>
+                        <option value="writing">Writing</option>
+                        <option value="fitness">Fitness</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskDate">Date</label>
+                    <input type="date" id="taskDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskStartTime">Start Time (optional)</label>
+                    <input type="time" id="taskStartTime">
+                </div>
+                <div class="form-group">
+                    <label for="taskEndTime">End Time (optional)</label>
+                    <input type="time" id="taskEndTime">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" data-modal="taskModal">Cancel</button>
+                    <button type="submit" class="btn-save">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Time Block Modal -->
+    <div class="modal" id="timeBlockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Time Block</h2>
+                <button class="modal-close" data-modal="timeBlockModal">&times;</button>
+            </div>
+            <form id="timeBlockForm">
+                <div class="form-group">
+                    <label for="blockDay">Day</label>
+                    <select id="blockDay">
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                        <option value="saturday">Saturday</option>
+                        <option value="sunday">Sunday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="blockStart">Start Time</label>
+                    <input type="time" id="blockStart" required>
+                </div>
+                <div class="form-group">
+                    <label for="blockEnd">End Time</label>
+                    <input type="time" id="blockEnd">
+                </div>
+                <div class="form-group">
+                    <label for="blockContent">Activity</label>
+                    <input type="text" id="blockContent" required placeholder="e.g., Fitness 💪">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" data-modal="timeBlockModal">Cancel</button>
+                    <button type="submit" class="btn-save">Add Block</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Time Block Modal -->
+    <div class="modal" id="editTimeBlockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Time Block</h2>
+                <button class="modal-close" data-modal="editTimeBlockModal">&times;</button>
+            </div>
+            <form id="editTimeBlockForm">
+                <input type="hidden" id="editBlockId">
+                <div class="form-group">
+                    <label for="editBlockStart">Start Time</label>
+                    <input type="time" id="editBlockStart" required>
+                </div>
+                <div class="form-group">
+                    <label for="editBlockEnd">End Time</label>
+                    <input type="time" id="editBlockEnd">
+                </div>
+                <div class="form-group">
+                    <label for="editBlockContent">Activity</label>
+                    <input type="text" id="editBlockContent" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" data-modal="editTimeBlockModal">Cancel</button>
+                    <button type="button" class="btn-delete" id="deleteTimeBlockBtn">Delete</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Transaction</h2>
+                <button class="modal-close" data-modal="transactionModal">&times;</button>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="transactionType">Type</label>
+                    <select id="transactionType">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionAmount">Amount (Ksh)</label>
+                    <input type="number" id="transactionAmount" required min="0.01" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="transactionCategory">Category</label>
+                    <select id="transactionCategory">
+                        <option value="salary">Salary</option>
+                        <option value="writing">Writing</option>
+                        <option value="trading">Trading</option>
+                        <option value="saas">SaaS</option>
+                        <option value="other-income">Other Income</option>
+                        <option value="living">Living Expenses</option>
+                        <option value="food">Food</option>
+                        <option value="transport">Transport</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="health">Health</option>
+                        <option value="other-expense">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionDate">Date</label>
+                    <input type="date" id="transactionDate" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" data-modal="transactionModal">Cancel</button>
+                    <button type="submit" class="btn-save">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
