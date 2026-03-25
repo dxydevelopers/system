@@ -1269,11 +1269,23 @@ function initializeFitness() {
         const day = checkbox.closest('.fitness-day').dataset.day;
         if (state.fitness[day]) {
             checkbox.checked = state.fitness[day];
+            // Apply completed class if already checked
+            if (state.fitness[day]) {
+                checkbox.closest('.fitness-day').classList.add('completed');
+            }
         }
         
         checkbox.addEventListener('change', () => {
             state.fitness[day] = checkbox.checked;
             saveToStorage(STORAGE_KEYS.FITNESS, state.fitness);
+            
+            // Add/remove completed class for visual feedback
+            const fitnessDay = checkbox.closest('.fitness-day');
+            if (checkbox.checked) {
+                fitnessDay.classList.add('completed');
+            } else {
+                fitnessDay.classList.remove('completed');
+            }
         });
     });
 }
